@@ -1,19 +1,34 @@
-interface ResolvingParameter {
+export interface ResolvingParameter {
   x: number,
   y: number,
   charAt: number,
   word: string,
   puzzle: string[][],
-  direction?: number
+  direction?: number,
+  mapping?: MappingObject[]
 }
 
-interface CallBackParameter {
+export interface MappingObject {
+  x: number,
+  y: number
+}
+
+export interface ResultObject {
+  valid: boolean,
+  word: string,
+  x: number,
+  y: number,
+  mapping?: MappingObject[]
+  direction: number
+}
+
+export interface CallBackParameter {
   counter?: number,
   x: number,
   y: number
 }
 
-const findWord = (puzzle: string | any, word: string): string => {
+const findWord = (puzzle: string | any, word: string): ResultObject => {
   if (typeof (puzzle) === 'string') {
     puzzle = puzzle.trim().split(/\n+/).map(line => line.trim().split(''))
   }
@@ -21,26 +36,46 @@ const findWord = (puzzle: string | any, word: string): string => {
     for (let x = 0; x < puzzle[y].length; x++) {
       if (puzzle[y][x] === word[0]) {
         if (word.length === 1) {
-          return `${word} was not found`
+          return {
+            valid: true,
+            word,
+            x,
+            y,
+            direction: 0
+          }
         }
-        let res = pathing({ x, y, charAt: 1, word, puzzle })
+        let res = pathing({ x, y, charAt: 1, word, puzzle, mapping: [{ x, y }] })
         if (res.result) {
-          return `${word} can be found at row ${y + 1}, column ${x + 1}, ${directionToWords(res.answer)}`
+          return {
+            valid: true,
+            word,
+            x,
+            y,
+            direction: res.direction,
+            mapping: res.mapping
+          }
         }
       }
 
     }
   }
-  return `${word} was not found`
+  return {
+    valid: false,
+    word,
+    x: 0,
+    y: 0,
+    direction: 0
+  }
 }
 
-const pathing = ({ x, y, charAt, word, puzzle }: ResolvingParameter): any => {
+const pathing = ({ x, y, charAt, word, puzzle, mapping = [] }: ResolvingParameter): any => {
   return surroundingBlock({ x, y, charAt, word, puzzle }, ({ counter, x, y }) => {
-    let res = tracing({ x, y, charAt: charAt + 1, word, puzzle, direction: counter })
+    let res = tracing({ x, y, charAt: charAt + 1, word, puzzle, direction: counter, mapping: [...mapping, { x, y }] })
     if (res.result) {
       return {
         result: true,
-        answer: counter
+        direction: counter,
+        mapping: res.mapping
       }
     } else {
       return {
@@ -63,7 +98,6 @@ const surroundingBlock = ({ x, y, charAt, word, puzzle, direction = 0 }: Resolvi
       if ((i < 0 || j < 0 || i > yRange || j > xRange)) {
         continue
       }
-      console.log(puzzle[i][j], counter)
       if ((direction && word[charAt] === puzzle[i][j] && counter === direction) ||
         (!direction && word[charAt] === puzzle[i][j])) {
         let res = cb({ counter, x: j, y: i })
@@ -76,39 +110,18 @@ const surroundingBlock = ({ x, y, charAt, word, puzzle, direction = 0 }: Resolvi
   return result
 }
 
-const tracing = ({ x, y, charAt, word, puzzle, direction }: ResolvingParameter): any => {
+const tracing = ({ x, y, charAt, word, puzzle, direction, mapping = [] }: ResolvingParameter): any => {
   return surroundingBlock({ x, y, charAt, word, puzzle, direction }, ({ x, y }) => {
     if (charAt === word.length - 1) {
       return {
-        result: true
+        result: true,
+        mapping: [...mapping, { x, y }]
       }
     } else {
-      return tracing({ x, y, charAt: charAt + 1, word, puzzle, direction })
+      let newMapping = [...mapping, { x, y }]
+      return tracing({ x, y, charAt: charAt + 1, word, puzzle, direction, mapping: newMapping })
     }
   })
-}
-
-const directionToWords = (val: number): string => {
-  switch (val) {
-    case 1:
-      return '⭦ direction'
-    case 2:
-      return '⭡ direction'
-    case 3:
-      return '⭧ direction'
-    case 4:
-      return '⭠ direction'
-    case 6:
-      return '⭢ direction'
-    case 7:
-      return '⭩ direction'
-    case 8:
-      return '⭣ direction'
-    case 9:
-      return '⭨ direction'
-    default:
-      return 'unknown'
-  }
 }
 
 export default findWord
