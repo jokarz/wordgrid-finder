@@ -108,10 +108,6 @@ const WordGrid: FC<WordGridProps> = () => {
     }
   }
 
-  useEffect(() => {
-    setSelection({ word: '', mapping: [] })
-  }, [wordArr])
-
   const findHandler = useCallback(() => {
     setShowResults(wordArr.map(word => findWord(gridArr, word)))
   }, [wordArr, gridArr])
@@ -121,6 +117,7 @@ const WordGrid: FC<WordGridProps> = () => {
       findHandler()
       setLoaded(true)
     }
+    setSelection({ word: '', mapping: [] })
   }, [loaded, wordArr, gridArr, findHandler])
 
   useEffect(() => {
