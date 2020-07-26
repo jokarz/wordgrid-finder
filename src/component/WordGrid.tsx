@@ -164,6 +164,7 @@ const WordGrid: FC<WordGridProps> = () => {
                                   <div key={char + x} className={`
                                 ${selection.mapping.length && selection.mapping.findIndex(item => item.x === x && item.y === y) > -1 ? 'bg-green-500 font-bold' : ''}
                               select-none w-8 h-8
+                              transition ease-in-out duration-500
                                  md:w-12 md:h-12 md:text-lg
                                  lg:w-16 lg:h-16 lg:text-xl
                                  xl:w-20 xl:h-20 xl:text-3xl
@@ -215,7 +216,7 @@ const WordGrid: FC<WordGridProps> = () => {
             <div className="flex justify-center w-full mb-4">
               <button
                 onClick={findHandler}
-                className="p-2 rounded border-transparent hover:border-green-700 border-2 focus:outline-none bg-green-600 font-bold hover:bg-green-700 text-white"
+                className="p-2 rounded border-transparent hover:border-green-600 border-2 focus:outline-none bg-green-500 font-bold hover:bg-green-600 text-white"
               >Find {wordArr.length > 1 ? 'them' : 'this'} </button>
             </div>
           </> :
@@ -254,10 +255,9 @@ const WordGrid: FC<WordGridProps> = () => {
 
                       }
                     }}
-                    className={`w-full p-3 rounded mb-3 text-white select-none ${!valid ? 'hover:bg-red-500 bg-red-500' : selection.word === res.word ? 'bg-green-700 cursor-pointer' : 'hover:bg-green-600 cursor-pointer bg-green-500'} `}>
+                    className={`w-full p-3 rounded mb-3 text-white select-none border-2 ${!valid ? 'hover:bg-red-500 border-red-500' : selection.word === res.word ? 'bg-green-600 cursor-pointer border-green-600' : 'hover:bg-green-500 hover:border-green-500 cursor-pointer border-green-400'} `}>
                     <div className="block text-center"><span className="font-bold">{res.word}</span></div>
                     <div className="block text-xs text-center">
-
                       {
                         valid ?
                           <>
@@ -266,7 +266,7 @@ const WordGrid: FC<WordGridProps> = () => {
                                 ''
                                 :
                                 <span>
-                                  {' '}<Direction direction={res.direction} /> {` direction`}
+                                  {' in '}<Direction direction={res.direction} /> {` direction`}
                                 </span>}
                             </span>
                           </> : <span>was not found</span>

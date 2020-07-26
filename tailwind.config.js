@@ -1,6 +1,6 @@
 module.exports = {
   purge: [
-    // './src/**/*.tsx',
+    './src/**/*.tsx',
   ],
   target: 'relaxed',
   prefix: '',
@@ -16,6 +16,18 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+
+      dark: {
+        100: '#999',
+        200: '#888',
+        300: '#777',
+        400: '#666',
+        500: '#555',
+        600: '#444',
+        700: '#333',
+        800: '#222',
+        900: '#111'
+      },
 
       black: '#000',
       white: '#fff',
