@@ -41,7 +41,8 @@ const findWord = (puzzle: string | any, word: string): ResultObject => {
             word,
             x,
             y,
-            direction: 0
+            direction: 0,
+            mapping: [{ x, y }]
           }
         }
         let res = pathing({ x, y, charAt: 1, word, puzzle, mapping: [{ x, y }] })
@@ -70,6 +71,13 @@ const findWord = (puzzle: string | any, word: string): ResultObject => {
 
 const pathing = ({ x, y, charAt, word, puzzle, mapping = [] }: ResolvingParameter): any => {
   return surroundingBlock({ x, y, charAt, word, puzzle }, ({ counter, x, y }) => {
+    if (charAt === word.length - 1) {
+      return {
+        result: true,
+        direction: counter,
+        mapping: [...mapping, { x, y }]
+      }
+    }
     let res = tracing({ x, y, charAt: charAt + 1, word, puzzle, direction: counter, mapping: [...mapping, { x, y }] })
     if (res.result) {
       return {
@@ -95,7 +103,7 @@ const surroundingBlock = ({ x, y, charAt, word, puzzle, direction = 0 }: Resolvi
   for (let i = y - 1; i <= y + 1; i++) {
     for (let j = x - 1; j <= x + 1; j++) {
       counter++
-      if ((i < 0 || j < 0 || i > yRange || j > xRange)) {
+      if ((i < 0 || j < 0 || i > yRange || j > xRange || (i === y && j === x))) {
         continue
       }
       if ((direction && word[charAt] === puzzle[i][j] && counter === direction) ||
