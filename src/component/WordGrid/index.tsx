@@ -1,66 +1,22 @@
 import React, { FC, useState, useEffect, useRef, useCallback, Fragment } from 'react'
-import findWord from '../helper/wordSearch'
-
+import findWord from '../../helper/wordSearch'
+import SearchResult from './SearchResult'
+import WordInput from './WordInput'
+import GridInput from './GridInput'
 
 interface WordGridProps {
   test?: string,
 }
 
-interface DirectionProps {
-  direction: number
-}
-
-const Direction: FC<DirectionProps> = ({ direction = 0 }) => {
-  switch (direction) {
-    case 1:
-      return (
-        <i className="fas fa-arrow-up" style={{ transform: 'rotate(315deg)' }}></i>
-      )
-    case 2:
-      return (
-        <i className="fas fa-arrow-up"></i>
-      )
-    case 3:
-      return (
-        <i className="fas fa-arrow-up" style={{ transform: 'rotate(45deg)' }}></i>
-      )
-    case 4:
-      return (
-        <i className="fas fa-arrow-up fa-rotate-270"></i>
-      )
-    case 6:
-      return (
-        <i className="fas fa-arrow-up fa-rotate-90"></i>
-      )
-    case 7:
-      return (
-        <i className="fas fa-arrow-up" style={{ transform: 'rotate(225deg)' }}></i>
-      )
-    case 8:
-      return (
-        <i className="fas fa-arrow-up fa-rotate-180"></i>
-      )
-    case 9:
-      return (
-        <i className="fas fa-arrow-up" style={{ transform: 'rotate(135deg)' }}></i>
-      )
-    default:
-      return (
-        <i className="fas fa-question"></i>
-      )
-
-  }
-}
-
 const WordGrid: FC<WordGridProps> = () => {
   const elementGridRef = useRef<any>({ scrollWidth: 0 })
   const wordGridRef = useRef<any>({ scrollWidth: 0 })
-  const [grid, setGrid] = useState<string>("agecshmauc\nlbyscfrsgw\nreanisscpa\neaagccxndo\ngrnrnarvoc\nbuewdieeaw\nservernmxr\nnpirtapnse\nncfuiftmug\neierieehgr")
+  const [grid, setGrid] = useState<string>("egecshma\nlsyscfrs\nreitissa\neaucccde\nglnrrver\ncuegieai\nsaucerxf\nmpereape")
   const [gridArr, setGridArr] = useState<string[][]>(grid.split(/\n+/).map(line => line.split('').filter(c => c.trim())))
   const [gridOverflow, setgridOverflow] = useState<boolean>(false);
   const [gridValid, setGridValid] = useState<boolean>(true)
 
-  const [word, setWord] = useState<string>('advert, advice, bear, branch, exercise, fire, mistake, running, server, screen')
+  const [word, setWord] = useState<string>('advice, clutch, exercise, fire, range, saucer, seal, tier')
   const [wordArr, setWordArr] = useState<string[]>([])
 
   const [showResults, setShowResults] = useState<any[]>([])
@@ -193,93 +149,19 @@ const WordGrid: FC<WordGridProps> = () => {
             </div>
             : null
         }
-        <h1 className="text-xl font-medium text-center text-white mb-4"> Grid structure</h1>
-        <div className="mb-4 flex justify-center w-full">
-          <textarea
-            rows={4}
-            style={{ maxWidth: '600px' }}
-            className=" w-full p-2 rounded focus:outline-none focus:border-teal-500 border-2 leading-tight"
-            value={grid}
-            onChange={e => setGrid(e.target.value)}>
-          </textarea>
-        </div>
+        <GridInput grid={grid} setGrid={setGrid} />
         {
-          gridValid ? <>
-            <h1 className="font-medium text-white text-xl text-center mb-4">Character(s) to find</h1>
-            <div className="mb-4 flex justify-center w-full">
-              <input
-                style={{ maxWidth: '600px' }}
-                className=" p-2 rounded focus:outline-none w-full"
-                placeholder="Separate each word by ,"
-                type="text" value={word} onChange={e => setWord(e.target.value)} />
-            </div>
-            <div className="flex justify-center w-full mb-4">
-              <button
-                onClick={findHandler}
-                className="p-2 rounded border-transparent hover:border-green-600 border-2 focus:outline-none bg-green-500 font-bold hover:bg-green-600 text-white"
-              >Find {wordArr.length > 1 ? 'them' : 'this'} </button>
-            </div>
-          </> :
-            <>
-              <h1 className="font-medium text-red-500 text-xl text-center mb-4">Ensure that the number of the characters in each row is the same</h1>
-            </>
+          gridValid ?
+            <WordInput word={word} setWord={setWord} clicked={findHandler} isMulti={wordArr.length > 1} />
+            :
+            <h1 className="font-medium text-red-500 text-xl text-center mb-4">Ensure that the number of the characters in each row is the same</h1>
         }
 
       </div>
 
       {
         showResults.length ?
-          <div className="lg:m-4 flex-none">
-            <h1 className="font-bold text-white text-xl text-center">Results</h1>
-            <h6 className="font-thin text-white text-center mb-4">(click on result to highlight it in the grid)</h6>
-            <div className="flex flex-col w-full mb-4 items-center">
-              {showResults.map(res => {
-                let { valid, x = 0, y = 0, mapping = [] } = res
-                return (
-                  <div
-                    key={res.word + x + y}
-                    style={{ maxWidth: '600px' }}
-                    onClick={(): void => {
-                      if (res.valid) {
-                        if (selection.word === res.word) {
-                          setSelection({
-                            word: '',
-                            mapping: []
-                          })
-                        } else {
-                          setSelection({
-                            word: res.word,
-                            mapping
-                          })
-                        }
-
-                      }
-                    }}
-                    className={`w-full p-3 rounded mb-3 text-white select-none border-2 ${!valid ? 'hover:bg-red-500 border-red-500' : selection.word === res.word ? 'bg-green-600 cursor-pointer border-green-600' : 'hover:bg-green-500 hover:border-green-500 cursor-pointer border-green-400'} `}>
-                    <div className="block text-center"><span className="font-bold">{res.word}</span></div>
-                    <div className="block text-xs text-center">
-                      {
-                        valid ?
-                          <>
-                            <span>{` at row ${y + 1}, column ${x + 1}`}
-                              {res.direction === 0 ?
-                                ''
-                                :
-                                <span>
-                                  {' in '}<Direction direction={res.direction} /> {` direction`}
-                                </span>}
-                            </span>
-                          </> : <span>was not found</span>
-                      }
-                    </div>
-
-                  </div>
-
-                )
-              })
-              }
-            </div>
-          </div>
+          < SearchResult result={showResults} setSelection={setSelection} selection={selection} />
           :
           null
       }
