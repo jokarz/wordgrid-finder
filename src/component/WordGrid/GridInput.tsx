@@ -13,7 +13,7 @@ const GridInput: FC<GridInputProps> = ({ grid = '', setGrid = () => { } }) => {
         <textarea
           rows={4}
           style={{ maxWidth: '600px' }}
-          className=" w-full p-2 rounded focus:outline-none focus:border-teal-500 border-2 leading-tight"
+          className=" w-full p-2 rounded focus:outline-none focus:border-green-500 border-2 leading-tight"
           value={grid}
           onChange={e => setGrid(e.target.value)}>
         </textarea>

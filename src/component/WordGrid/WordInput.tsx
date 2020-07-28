@@ -15,7 +15,7 @@ const WordInput: FC<WordInputProps> = ({ word = '', setWord = () => { }, clicked
       <div className="mb-4 flex justify-center w-full">
         <input
           style={{ maxWidth: '600px' }}
-          className=" p-2 rounded focus:outline-none w-full"
+          className=" p-2 rounded focus:outline-none w-full focus:border-green-500 border-2 "
           placeholder="Separate each word by ,"
           type="text" value={word} onChange={e => setWord(e.target.value)} />
       </div>
@@ -23,7 +23,9 @@ const WordInput: FC<WordInputProps> = ({ word = '', setWord = () => { }, clicked
         <button
           onClick={() => clicked()}
           className="p-2 rounded border-transparent hover:border-green-600 border-2 focus:outline-none bg-green-500 font-bold hover:bg-green-600 text-white"
-        >Find {isMulti ? 'them' : 'this'} </button>
+        >
+          <i className="fas fa-search"></i>{' '}
+          Find {isMulti ? 'them' : 'this'} </button>
       </div>
     </>
   )
